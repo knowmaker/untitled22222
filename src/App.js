@@ -1,54 +1,62 @@
-import React, {Component} from 'react';
-import './App.css';
-import ReactModal from 'react-modal-resizable-draggable';
-import Demo from "./editor.js";
+import React from 'react';
+import Modal from 'react-modal';
+import Demo from "./editor";
 
-class App extends Component {
+const customStyles = {
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+    },
+};
 
-    constructor() {
-        super();
+// Make sure to bind modal to your appElement (https://reactcommunity.org/react-modal/accessibility/)
+Modal.setAppElement('#root');
 
-        this.state = {
-            modalIsOpen: false
-        };
+function App() {
+    let subtitle;
+    const [modalIsOpen, setIsOpen] = React.useState(false);
 
-        this.openModal = this.openModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
+    function openModal() {
+        setIsOpen(true);
     }
 
-
-    openModal() {
-        this.setState({modalIsOpen: true});
-    }
-    closeModal() {
-        this.setState({modalIsOpen: false});
+    function afterOpenModal() {
+        // references are now sync'd and can be accessed.
+        subtitle.style.color = '#f00';
     }
 
-
-    render() {
-        return (
-            <div className="App">
-                <Demo/>
-                <button onClick={this.openModal}>
-                    Open modal
-                </button>
-                <ReactModal
-                    initWidth={800}
-                    initHeight={400}
-                    onFocus={() => console.log("Modal is clicked")}
-                    className={"my-modal-custom-class"}
-                    onRequestClose={this.closeModal}
-                    isOpen={this.state.modalIsOpen}>
-                    <h3>My Modal</h3>
-                    <div className="body">
-                    </div>
-                    <button onClick={this.closeModal}>
-                        Close modal
-                    </button>
-                </ReactModal>
-            </div>
-        );
+    function closeModal() {
+        setIsOpen(false);
     }
+
+    return (
+        <div>
+            <button onClick={openModal}>Open Modal</button>
+            <Modal
+                isOpen={modalIsOpen}
+                onAfterOpen={afterOpenModal}
+                onRequestClose={closeModal}
+                style={customStyles}
+                contentLabel="Example Modal"
+            >
+                <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Hello</h2>
+                <button onClick={closeModal}>close</button>
+                <div>I am a modal</div>
+                <form>
+                    <input />
+                    <button>tab navigation</button>
+                    <button>stays</button>
+                    <button>inside</button>
+                    <button>the modal</button>
+                    <Demo/>
+                </form>
+            </Modal>
+        </div>
+    );
 }
 
 export default App;
